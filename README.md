@@ -14,3 +14,7 @@ Chrome version : 121.0.6167.16
 Chromedriver 는 Chrome의 버전과 동일하게 하여야합니다.
 115 이후부터는 JSON형태로 endpoint를 제공하므로 다음의 사이트에서 Ctrl + F 로 버전을 검색해서 링크를 추출하십시오.
 ``` https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json ```
+
+
+## 구조 설명
+Gallery, Showroom, ArtPiece 세가지 타입으로 나누어 작동된다.
