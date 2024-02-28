@@ -1,20 +1,14 @@
 #%%
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from crawler import planner, harvester
+from utils.utility import makeCrawlDir
+import time
 
-# ChromeDriver의 경로 지정
-driver_path = './driver/chromedriver'
-service = Service(executable_path=driver_path)
-browser = webdriver.Chrome(service=service)
-
-# 웹사이트 열기
-browser.get('https://cafe.naver.com/kumdibike?iframe_url=/ArticleList.nhn%3Fsearch.clubid=19039077%26search.menuid=70%26search.boardtype=I')
-
-#%%
-import threading
-from queue import Queue
-from utils import parser
-
-if __name__ == "__main__":
-    file_path = './galleries.txt'
-    galleries = parser.parse_galleries_file(file_path)
+links = planner.initMaps('orderURLs.txt')
+tree = None
+for link in links:
+    tree = planner.writeDownMap(link)
+    print(link.root.url)
+    directoryName = harvester.getGalleryName(link.root.url)
+    directoryPath = makeCrawlDir(directoryName)
+    tree.saveTreeAsJson(directoryPath + '/' + 'tree.json')
+tree.getTreeNodes()
