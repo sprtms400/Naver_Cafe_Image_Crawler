@@ -16,7 +16,7 @@ class TreeNode:
         self.nodeId = genUUID()
         self.nodeType = nodeType
         self.url = url
-        self.isConquered = None
+        self.isConquered = False
         self.updatedDate = datetime.now()
         self.children = []
         self.parent = None
@@ -58,7 +58,7 @@ class Tree:
         
     # 깊이 우선 탐색을 사용한 트리 순회     
     def findNodeDFS(self, url, node=None):
-        if node is None:
+        if node == None:
             node = self.root
         if node.url == url:
             return node
@@ -70,7 +70,7 @@ class Tree:
             
     def getTreeNodes(self, node=None):
         # 재귀적으로 트리의 모든 노드를 리스트로 반환
-        if node is None:
+        if node == None:
             # 노드가 주어지지 않으면 루트 노드부터 시작
             node = self.root
         nodes = [node]
@@ -79,7 +79,7 @@ class Tree:
         return nodes
     
     def getConqueredNodes(self, node=None):
-        if node is None:
+        if node == None:
             node = self.root
         conqueredNodes = []
         if node.isConquered:
@@ -89,7 +89,7 @@ class Tree:
         return conqueredNodes
     
     def getUnconqueredNodes(self, node=None):
-        if node is None:
+        if node == None:
             node = self.root
         unconqueredNodes = []
         if not node.isConquered:

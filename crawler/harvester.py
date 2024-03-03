@@ -3,12 +3,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
 
+import utils.utility as utility
 import time
 import re
 import requests
-import utils.treeUtility as treeUtility
-from datetime import datetime
+
 
 
 DRIVER_PATH = './driver/chromedriver'
@@ -108,16 +109,42 @@ def getGalleryName(galleryUrl):
     cafeName = re.search(r'cafe\.naver\.com/([^/?]+)', galleryUrl).group(1)
     galleryName = wait.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="sub-tit"]/div[1]/div/h3'))).text
     driver.quit()
-    return cafeName + '_' + galleryName
+    return cafeName + '_' + galleryName.replace(' ', '_')
 
-def downloadArtWork(artWorkUrl, downloadDir, node):
-    fileName = datetime.now().strftime('%Y-%m-%d_%H:%M')
-    downloadPath = downloadDir + '/' + fileName
+def downloadArtWork(artWorkUrl, downloadPath):
     response = requests.get(artWorkUrl)
     if response.status_code == 200:
         with open(downloadPath, 'wb') as file:
             file.write(response.content)
+        return downloadPath
+    else:
+        return None
 
-def downloadArtWorks(artWorkUrls, downloadDir, node):
-    for artWorkUrl in artWorkUrls:
-        downloadArtWork(artWorkUrl, downloadDir, node)
+def downloadArtWorks(numberOfWorkers, workerNumber, targets, saveDir, stopEvent):
+    try:
+        checkList = []
+        i = 0
+        for target in targets:
+            if stopEvent.is_set():
+                print(f" --> Worker {workerNumber} stopping.")
+                return checkList
+            targetUrl = target['url']
+            downloadPath = f"{saveDir}/{target['nodeId']}"
+            if downloadArtWork(targetUrl, downloadPath) != None:
+                checkList.append({
+                    'nodeId': target['nodeId'],
+                    'nodeType': target['nodeType'],
+                    'url': target['url'],
+                    'isConquered': True,
+                    'updatedDate': datetime.now(),
+                    'childrenNodeId': target['childrenNodeId'],
+                    'parentId': target['parentId']
+                })
+            i += 1
+            
+            utility.displayMultipleProgressBars(numberOfWorkers=numberOfWorkers, workerNumber=workerNumber, iteration=i, 
+                                                    total=len(targets), prefix=f"Worker ({workerNumber+1}) Progress:", suffix='Complete:', length=50)
+        return checkList
+    except Exception as e:
+        print('Error occured while downloading the artworks', e)
+        return checkList
