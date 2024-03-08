@@ -56,4 +56,10 @@ python main.py <"Navercafe 게시판 주소">
 python main.py <projectDirectoryPath>
 ```
 
+#### 사용 예시
+#### 결과 예시
+작업이 시작되면 전달받은 스레드 갯수에따라 progress bar 가 생성됩니다.
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/608ccd49-ea68-4599-8ef9-98a5f232f64a)
+
+
 # 사용예시
