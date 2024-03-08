@@ -67,5 +67,3 @@ python main.py <projectDirectoryPath>
 작업완료시 다음메세지와 함께 프로젝트 디렉토리의 images 디렉토리에 이미지들을 확인 할 수 있습니다.
 이미지명은 map.json 의 'photoId' 와 동일합니다.
 ![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/3e300ac2-aa4e-454f-ab59-c338b2aedd47)
-
-# 사용예시
