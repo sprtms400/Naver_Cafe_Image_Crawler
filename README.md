@@ -57,9 +57,15 @@ python main.py <projectDirectoryPath>
 ```
 
 #### 사용 예시
+<3> 의 결과로 생성된 디렉토리를 지정하면 이미지 수집모드로 실행가능합니다. 다음의 사진을 참고하세요.
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/5b798fc2-2dde-4713-96ef-f63348055fd2)
+
 #### 결과 예시
 작업이 시작되면 전달받은 스레드 갯수에따라 progress bar 가 생성됩니다.
 ![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/608ccd49-ea68-4599-8ef9-98a5f232f64a)
 
+작업완료시 다음메세지와 함께 프로젝트 디렉토리의 images 디렉토리에 이미지들을 확인 할 수 있습니다.
+이미지명은 map.json 의 'photoId' 와 동일합니다.
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/3e300ac2-aa4e-454f-ab59-c338b2aedd47)
 
 # 사용예시
