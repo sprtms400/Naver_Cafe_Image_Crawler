@@ -41,6 +41,13 @@ pip install -r requirements.txt
 ```
 python main.py <"Navercafe 게시판 주소">
 ```
+#### 사용 예시
+타겟 사이트 : https://cafe.naver.com/kumdibike?iframe_url=/ArticleList.nhn%3Fsearch.clubid=19039077%26search.menuid=80%26search.boardtype=I
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/4c03f14b-4c73-4d2a-a357-d259e3e6a564)
+
+#### 결과 예시
+결과물로 카페명과, 게시판명, 시간정보가 기술된 디렉토리 생성 및 안에 map.json파일이 생성됩니다.
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/a765b165-116b-458e-a0d9-56aa03498bd9)
 
 ### 4. 프로젝트의 실제 이미지 수집하기 (경로를 큰따옴표로 묶어주십시오) <br>
 <i>해당 디렉토리 내에 map.json 파일이 필수적으로 존재해야 합니다. 없거나 손상됐을시 3번 과정으로 다시 돌아가십시오. <br>
