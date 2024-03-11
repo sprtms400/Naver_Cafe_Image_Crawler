@@ -3,6 +3,7 @@ import requests
 import json
 import time
 import pika
+import os
 
 IMAGE_PATH = 'images'
 MAPFILE_NAME = 'map.json'
@@ -55,16 +56,27 @@ def upload_project(project_path):
             'accessUserId': 'demo'
         }
         files = None
+        
+        if os.path.exists(image_path) == False:
+            print('File not found:', image_path)
+            continue
+        
         with open(image_path, 'rb') as file:
             files = {'file': (image_path, file)}
             response = requests.post('http://localhost:3000/photo/upload', files=files, data=data)
+            i = 0
+            while response.status_code != 200:
+                if i > 5:
+                    print('Failed', artwork['nodeId'])
+                    break
+                print('Retrying', artwork['nodeId'], '...')
+                time.sleep(1)
+                response = requests.post('http://localhost:3000/photo/upload', files=files, data=data)
             meters += 1
-            print('response:', response.status_code, response.text)
-            responses.append(response)
-    
     print('Upload complete')
     print('Total requests:', len(responses))
     print('success:', len([response for response in responses if response.status_code == 200]))
+    print('fail:', len([response for response in responses if response.status_code != 200]))
 
 upload_project('../kumdibike_2023_상주그란폰도_2024-03-08_18:33')
 # quque_uploader('../kumdibike_2023_상주그란폰도_2024-03-08_18:33')
