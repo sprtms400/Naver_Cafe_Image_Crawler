@@ -67,3 +67,9 @@ python main.py <projectDirectoryPath>
 작업완료시 다음메세지와 함께 프로젝트 디렉토리의 images 디렉토리에 이미지들을 확인 할 수 있습니다.
 이미지명은 map.json 의 'photoId' 와 동일합니다.
 ![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/3e300ac2-aa4e-454f-ab59-c338b2aedd47)
+
+### 마라톤, 그란폰도 대회 이미지 검색 서비스에서의 담당부분
+![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/e08e046b-7e1e-43c0-87c4-80f6261b067f)
+본 리포지터리에서는 마라톤, 그란폰도 대회 이미지 검색 서비스에서 녹색 박스에 해당된 부분을 담당합니다. 프로젝트에 대한 자세한 설명은
+다음 저장소를 확인하세요.
+https://github.com/sprtms400/Granfondo_Photo_Search/tree/main
