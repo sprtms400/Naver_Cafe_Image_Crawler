@@ -1,79 +1,108 @@
-## 네이버 카페 앨범 게시판 이미지 크롤러
-네이버 카페의 앨범 게시판 에서 이미지를 추출 및 저장후 참고된 링크는 맵 형태로 저장하는 프로그램입니다.
+# Naver Cafe Image Crawler
 
-링크는 트리 형태로 저장되어 추후 최신 업데이트된 자료에대해서 따로 관리 및 반영 하기에 용이합니다.
+네이버 카페 앨범 게시판에서 이미지를 모아오는 프로그램이다.
 
-트리형태는 다음을 참조하세요.
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/1e3a37c0-96d7-455d-8a65-1be83cd44a89)
+> 2024년 작업이다. [Granfondo Photo Search](https://github.com/sprtms400/Granfondo_Photo_Search) 에서 대회 사진을 모으는 부분을 맡는다.
 
+---
 
-:o:게시판 단위로 크롤링되기때문에 앨범 게시판 링크를 전달해야합니다.:o:
+# 개요
 
-:x:카페링크 전달시 작동하지 않습니다.:x:
+## 1. 어떤 문제를 해결하려 했나요?
 
-## 개발된 환경 및 구성
+대회 사진은 보통 동호회 카페 앨범 게시판에 올라온다. 게시글 수백 개에 사진이 수천 장 흩어져 있다.
 
-OS : Ubuntu 20.04
+이걸 검색 서비스에 넣으려면 전부 내려받아야 하는데, 손으로 하면 며칠이 걸린다. 게다가 대회가 끝나고도 며칠씩 사진이 계속 올라와서, 한 번 받아오는 걸로 끝나지도 않는다.
 
-Python version : 3.9
-``` 
-conda create <project-name> python=3.9
+## 2. 어떻게 되었나요
+
+게시판 주소만 주면 사진을 전부 받아온다. 받아오기 전에 먼저 게시글과 이미지 링크를 훑어서 지도 파일(`map.json`)로 만들어 두고, 그다음 그 지도를 보고 실제 파일을 내려받는다.
+
+두 단계로 나눈 덕분에 나중에 다시 돌렸을 때 새로 올라온 것만 골라낼 수 있다.
+
+![링크 트리 구조](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/1e3a37c0-96d7-455d-8a65-1be83cd44a89)
+
+## 3. 향후 과제
+
+지금은 앨범 게시판만 된다. 다른 형태의 게시판이나 다른 사이트는 각각 따로 만들어야 한다.
+
+---
+
+# 상세
+
+## 1. 기존 문제 설정
+
+**양이 많다.** 대회 하나에 사진 수천 장이다. 한 장씩 우클릭 저장은 불가능하다.
+
+**계속 늘어난다.** 대회가 끝난 뒤에도 참가자들이 며칠에 걸쳐 사진을 올린다. 매번 처음부터 다시 받으면 낭비다.
+
+**어디서 가져왔는지 남아야 한다.** 사진만 있고 출처가 없으면 나중에 문제가 생겼을 때 원본 게시글을 찾을 수 없다.
+
+## 2. 해결방안 제시
+
+**수집을 두 단계로 나눈다.** 먼저 링크만 훑어서 지도를 만들고, 그다음 지도를 보고 파일을 받는다. 지도가 남아 있으니 다시 돌릴 때 비교해서 새것만 받으면 된다.
+
+**지도는 트리로 저장한다.** 게시판 아래 게시글, 게시글 아래 이미지 순으로 계층을 유지한다. 어떤 사진이 어느 글에서 왔는지가 그대로 남는다.
+
+**받는 건 여러 갈래로 동시에.** 수천 장을 하나씩 받으면 오래 걸린다. 사용자가 스레드 개수를 정하면 그만큼 나눠 받는다.
+
+## 3. 구현 상세
+
+### 구성
+
+| 파일 | 하는 일 |
+|---|---|
+| `crawler/planner.py` | 게시판을 훑어 링크 지도(`map.json`)를 만든다 |
+| `crawler/harvester.py` | 지도를 보고 실제 이미지를 받는다 |
+| `crawler/core.py` | 브라우저 조작 |
+| `utils/treeTypes.py` `treeUtility.py` | 트리 구조 정의와 조작 |
+| `ui/mainUi.py` | 스레드 개수를 고르는 화면과 진행 표시줄 |
+
+### 사용법
+
+**1단계 — 지도 만들기.** 앨범 게시판 주소를 큰따옴표로 묶어 넘긴다.
+
+```
+python main.py "<네이버카페 게시판 주소>"
 ```
 
-Chrome version : 121.0.6167.16
+카페명·게시판명·시각이 들어간 디렉터리가 생기고 그 안에 `map.json` 이 만들어진다.
 
-Chromedriver 는 Chrome의 버전과 동일하게 하여야합니다.
-115 이후부터는 JSON형태로 endpoint를 제공하므로 다음의 사이트에서 Ctrl + F 로 버전을 검색해서 링크를 추출하십시오.
-``` 
+![지도 생성 결과](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/a765b165-116b-458e-a0d9-56aa03498bd9)
+
+**2단계 — 이미지 받기.** 1단계에서 만들어진 디렉터리 경로를 넘긴다.
+
+```
+python main.py "<프로젝트 디렉터리 경로>"
+```
+
+스레드 개수를 고르는 화면이 뜨고, 고르면 그 수만큼 진행 표시줄이 생긴다. 최대 5개까지 된다.
+
+![수집 진행](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/608ccd49-ea68-4599-8ef9-98a5f232f64a)
+
+받은 이미지는 `images` 디렉터리에 들어가고, 파일명은 `map.json` 의 `photoId` 와 같다.
+
+### 준비물
+
+Ubuntu 20.04, Python 3.9, Chrome 121.0.6167.16.
+
+Chromedriver 는 Chrome 과 **버전이 같아야 한다.** 115 이후로는 아래 주소에서 버전을 찾아 링크를 받으면 된다.
+
+```
 https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
 ```
-## 셋업 및 사용법
-### 1. Chromedriver 위치시키기 <br>
-<i>환경구성에서 다운로드 받은 chromedriver 파일을 프로젝트 디렉토리 내 driver 디렉토리로 위치시키십시오</i>
+
+받은 chromedriver 는 `driver/` 에 두고 의존 패키지를 설치한다.
+
 ```
-  cp chromedriver ./driver/
-```
-### 2. 의존 라이브러리 설치
-```
+cp chromedriver ./driver/
 pip install -r requirements.txt
 ```
 
-### 3. 프로젝트 생성 및 map.json 생성 (링크를 큰따옴표로 묶어주십시오) <br>
-<i>해당 과정 이후 프로젝트 디렉토리가 자동 생성 및 안에 map.json 파일이 생깁니다.<br>
-주소는 게시판 
-</i>
-```
-python main.py <"Navercafe 게시판 주소">
-```
-#### 사용 예시
-타겟 사이트 : https://cafe.naver.com/kumdibike?iframe_url=/ArticleList.nhn%3Fsearch.clubid=19039077%26search.menuid=80%26search.boardtype=I
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/4c03f14b-4c73-4d2a-a357-d259e3e6a564)
+## 4. 한계점
 
-#### 결과 예시
-결과물로 카페명과, 게시판명, 시간정보가 기술된 디렉토리 생성 및 안에 map.json파일이 생성됩니다.
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/a765b165-116b-458e-a0d9-56aa03498bd9)
-
-### 4. 프로젝트의 실제 이미지 수집하기 (경로를 큰따옴표로 묶어주십시오) <br>
-<i>해당 디렉토리 내에 map.json 파일이 필수적으로 존재해야 합니다. 없거나 손상됐을시 3번 과정으로 다시 돌아가십시오. <br>
-최대 5개의 사용자가 스레드 숫자를 지정, 해당 수만큼 멀티스레드를 이용하여 빠르게 이미지 수집이 가능합니다 스레드 수는 해당 명령어 실행 후 선택하는 ui가 표출됩니다.</i>
-```
-python main.py <projectDirectoryPath>
-```
-
-#### 사용 예시
-<3> 의 결과로 생성된 디렉토리를 지정하면 이미지 수집모드로 실행가능합니다. 다음의 사진을 참고하세요.
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/5b798fc2-2dde-4713-96ef-f63348055fd2)
-
-#### 결과 예시
-작업이 시작되면 전달받은 스레드 갯수에따라 progress bar 가 생성됩니다.
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/608ccd49-ea68-4599-8ef9-98a5f232f64a)
-
-작업완료시 다음메세지와 함께 프로젝트 디렉토리의 images 디렉토리에 이미지들을 확인 할 수 있습니다.
-이미지명은 map.json 의 'photoId' 와 동일합니다.
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/3e300ac2-aa4e-454f-ab59-c338b2aedd47)
-
-### 마라톤, 그란폰도 대회 이미지 검색 서비스에서의 담당부분
-![image](https://github.com/sprtms400/Naver_Cafe_Image_Crawler/assets/26298389/e08e046b-7e1e-43c0-87c4-80f6261b067f)
-본 리포지터리에서는 마라톤, 그란폰도 대회 이미지 검색 서비스에서 녹색 박스에 해당된 부분을 담당합니다. 프로젝트에 대한 자세한 설명은
-다음 저장소를 확인하세요.
-https://github.com/sprtms400/Granfondo_Photo_Search/tree/main
+- **앨범 게시판만 된다.** 카페 대문 주소를 주면 동작하지 않는다. 반드시 앨범 게시판 주소여야 한다.
+- 브라우저를 직접 조작하는 방식이라 네이버가 화면 구조를 바꾸면 그때마다 고쳐야 한다.
+- Chromedriver 버전을 사용자가 직접 맞춰야 한다.
+- 로그인이 필요한 비공개 게시판은 다루지 않는다.
+- 테스트 코드가 없다.
