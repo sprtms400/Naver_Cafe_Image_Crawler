@@ -2,7 +2,7 @@
 
 네이버 카페 앨범 게시판에서 이미지를 모아오는 프로그램이다.
 
-> 2024년 작업이다. [Granfondo Photo Search](https://github.com/sprtms400/Granfondo_Photo_Search) 에서 대회 사진을 모으는 부분을 맡는다.
+> 2024년 작업이다. [픽마이레이스(PickMyRace)](https://github.com/sprtms400/Granfondo_Photo_Search)에서 대회 사진을 모으는 부분을 맡는다.
 
 ---
 
